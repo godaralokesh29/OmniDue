@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase'
+import { supabaseAdmin } from '@/lib/supabase'
 import { 
   analyzeDocumentForCompliance, 
   analyzeCodeForLicenses,
@@ -33,7 +33,6 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const supabase = createClient()
     const findings: any[] = []
     const analysisResults: Record<string, any> = {}
 
@@ -215,7 +214,7 @@ export async function POST(request: NextRequest) {
 
     // Store findings in database
     if (findings.length > 0) {
-      const { error: insertError } = await supabase
+      const { error: insertError } = await supabaseAdmin
         .from('findings')
         .insert(findings)
 
