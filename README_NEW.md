@@ -2,7 +2,7 @@
 
 > **Intelligent Compliance Intelligence for M&A Transactions**
 
-An enterprise-grade AI-powered platform for automated compliance analysis, risk assessment, and legal due diligence during mergers and acquisitions. Built with Next.js 15, React 19, and Vercel AI SDK, OmniDue provides comprehensive intelligence across security, privacy, regulatory, and legal domains.
+An enterprise-grade AI-powered platform for automated compliance analysis, risk assessment, and legal due diligence during mergers and acquisitions. Built with Next.js 16, React 19, and Vercel AI SDK, OmniDue provides comprehensive intelligence across security, privacy, regulatory, and legal domains.
 
 [![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)](https://nextjs.org/)
 [![React](https://img.shields.io/badge/React-19-blue?logo=react)](https://react.dev/)
@@ -486,251 +486,313 @@ Body:  { integrationName }
 
 ---
 
-## API Endpoints
+## ⚙️ Configuration
 
-### Audits
+### Tailwind CSS Theme
 
-```bash
-GET    /api/audits                 # List all audits
-POST   /api/audits/create          # Create new audit
-GET    /api/audits/:auditId        # Get audit details
-GET    /api/audits/:auditId/findings  # Get findings for audit
-```
-
-### Analysis
-
-```bash
-POST   /api/analysis/analyze       # Run AI analysis on documents
-POST   /api/analysis/license-scan  # Scan dependencies
-POST   /api/analysis/security-audit # Security scanning
-POST   /api/analysis/privacy-map   # Privacy compliance check
-POST   /api/analysis/regulatory    # Regulatory requirement check
-```
-
-### Documents
-
-```bash
-POST   /api/documents/upload       # Upload document
-GET    /api/documents/:auditId     # List documents
-DELETE /api/documents/:docId       # Delete document
-```
-
-## Usage Guide
-
-### Running an Audit
-
-1. **Create Audit**
-   - Click "New Audit" button
-   - Enter company name, audit type (Legal/Security/Privacy/Compliance)
-   - Select audit scope and regulations
-
-2. **Upload Documents**
-   - Upload privacy policy, GitHub repo, contracts, codebase
-   - Add document metadata (document type, sensitivity level)
-
-3. **Run Analysis**
-   - Select analysis types: Risk Heatmap, License Scan, Security Audit, Privacy Map, Regulatory Check
-   - Choose AI-powered analysis depth (basic/standard/deep)
-   - Start audit
-
-4. **Review Results**
-   - View Risk Heatmap visualization
-   - Review findings by severity
-   - Check compliance scores by regulation
-   - View remediation recommendations
-
-5. **Export Report**
-   - Generate PDF executive summary
-   - Export full CSV with all findings
-   - Share JSON report with stakeholders
-
-### Interpreting Results
-
-**Risk Heatmap**: 
-- Red (7-10): Critical gaps requiring immediate action
-- Orange (4-6): High priority gaps to address within 30 days
-- Yellow (2-3): Medium priority gaps to address within 90 days
-- Blue (0-1): Low risk or fully compliant
-
-**Compliance Score**:
-- 90-100%: Strong compliance posture
-- 70-89%: Acceptable with minor gaps
-- 50-69%: Significant gaps requiring planning
-- Below 50%: Critical gaps requiring immediate remediation
-
-## Demo Mode
-
-The application ships with sample data for testing:
-
-```typescript
-// lib/sample-data.ts contains:
-- 3 sample audits (TechCorp, DataStream, CloudFirst)
-- 8 sample findings across Security, Privacy, Compliance
-- Sample Risk Heatmap data
-- Compliance statistics
-```
-
-To use real data:
-1. Configure Supabase integration
-2. Update API endpoints to query database instead of sample-data.ts
-3. Upload real documents and documents
-
-## Configuration
-
-### Tailwind CSS
-
-Design tokens defined in `app/globals.css`:
+Customize design tokens in `app/globals.css`:
 
 ```css
---background: white
---foreground: black
---primary: blue
---destructive: red
---muted-foreground: gray
+@theme {
+  --background: white;
+  --foreground: black;
+  --primary: 3b82f6; /* Blue */
+  --primary-foreground: white;
+  --destructive: ef4444; /* Red */
+  --destructive-foreground: white;
+  --muted: e5e7eb; /* Light Gray */
+  --muted-foreground: 6b7280; /* Dark Gray */
+  --accent: 8b5cf6; /* Purple */
+  --card: white;
+  --card-foreground: black;
+  --success: 10b981; /* Green */
+  --warning: f59e0b; /* Amber */
+  --info: 0ea5e9; /* Sky Blue */
+}
 ```
 
-Customize by editing the `@theme` block.
+### Supabase Authentication Setup
 
-### API Keys
+```typescript
+// Configure in lib/supabase.ts
+import { createClient } from '@supabase/supabase-js'
 
-All API keys should be in `.env.local`:
-
-```env
-# Required
-NEXT_PUBLIC_SUPABASE_URL
-NEXT_PUBLIC_SUPABASE_ANON_KEY
-CORAL_AI_API_KEY
-
-# Optional - integrations
-NOTION_INTEGRATION_TOKEN
-GITHUB_API_TOKEN
-SEC_EDGAR_API_KEY
+export const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+)
 ```
 
-## Deployment
+### Vercel AI SDK Configuration
 
-### Deploy to Vercel
+```typescript
+// Configure in lib/analyzers/coral-ai.ts
+import { generateText } from 'ai'
+
+export async function analyzeCompliance(content: string) {
+  const { text } = await generateText({
+    model: 'gpt-4-turbo', // or 'claude-3-sonnet', etc.
+    prompt: `Analyze the following for compliance issues: ${content}`
+  })
+  return text
+}
+```
+
+---
+
+## 📊 Database Schema
+
+### Core Tables
+
+#### `audits`
+```sql
+CREATE TABLE audits (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  company_name VARCHAR(255) NOT NULL,
+  audit_type TEXT NOT NULL,
+  status VARCHAR(50) DEFAULT 'pending',
+  risk_score INTEGER DEFAULT 0,
+  overall_risk VARCHAR(50),
+  documents_count INTEGER DEFAULT 0,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+```
+
+#### `findings`
+```sql
+CREATE TABLE findings (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  audit_id UUID NOT NULL REFERENCES audits(id) ON DELETE CASCADE,
+  category VARCHAR(100) NOT NULL,
+  severity VARCHAR(50) NOT NULL,
+  title VARCHAR(255) NOT NULL,
+  description TEXT NOT NULL,
+  remediation TEXT,
+  evidence TEXT,
+  status VARCHAR(50) DEFAULT 'open',
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+```
+
+#### `risk_assessments`
+```sql
+CREATE TABLE risk_assessments (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  audit_id UUID NOT NULL REFERENCES audits(id) ON DELETE CASCADE,
+  category VARCHAR(100) NOT NULL,
+  dimension VARCHAR(100) NOT NULL,
+  risk_score INTEGER NOT NULL,
+  notes TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+```
+
+#### `compliance_scores`
+```sql
+CREATE TABLE compliance_scores (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  audit_id UUID NOT NULL REFERENCES audits(id) ON DELETE CASCADE,
+  regulation VARCHAR(100) NOT NULL,
+  score INTEGER NOT NULL,
+  gap_count INTEGER DEFAULT 0,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+```
+
+#### `documents`
+```sql
+CREATE TABLE documents (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  audit_id UUID NOT NULL REFERENCES audits(id) ON DELETE CASCADE,
+  file_name VARCHAR(255) NOT NULL,
+  file_type VARCHAR(50),
+  file_size INTEGER,
+  upload_date TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  processed BOOLEAN DEFAULT false
+);
+```
+
+See `sql/001_initial_schema.sql` for complete schema.
+
+---
+
+## 📖 Usage Guide
+
+### Running Your First Audit
+
+#### Step 1: Create an Audit
+```
+1. Navigate to dashboard homepage
+2. Click "New Audit" button
+3. Enter company name: "TechCorp Inc"
+4. Select audit type: "Comprehensive"
+5. Choose regulations: GDPR, SOX, CCPA
+6. Click "Create Audit"
+```
+
+#### Step 2: Upload Documents
+```
+1. Go to Audit → Documents tab
+2. Click "Upload Document"
+3. Select files:
+   - Privacy Policy (PDF)
+   - GitHub Repository URL
+   - Source Code Archive
+   - Compliance Policies
+4. Add metadata
+5. Click "Upload & Analyze"
+```
+
+#### Step 3: Run Analysis
+```
+1. Click "Start Analysis"
+2. Select analysis types:
+   ✓ Risk Heatmap
+   ✓ License Scanner
+   ✓ Security Audit
+   ✓ Privacy Mapper
+   ✓ Regulatory Checker
+3. Choose analysis depth: "Standard" or "Deep"
+4. Click "Run Analysis"
+```
+
+#### Step 4: Review Results
+```
+Dashboard shows:
+- Risk Heatmap visualization
+- Compliance Scorecard
+- Top findings by severity
+- Remediation timeline
+```
+
+#### Step 5: Export Report
+```
+1. Click "Generate Report"
+2. Choose format: PDF / CSV / JSON
+3. Select detail level: Executive / Standard / Detailed
+4. Click "Export"
+```
+
+### Understanding Results
+
+#### Risk Heatmap Colors
+| Color | Range | Meaning |
+|-------|-------|---------|
+| 🔴 Red | 7-10 | Critical - Immediate action required |
+| 🟠 Orange | 4-6 | High - Address within 30 days |
+| 🟡 Yellow | 2-3 | Medium - Address within 90 days |
+| 🔵 Blue | 0-1 | Low - Acceptable risk level |
+
+#### Compliance Scores
+- 90-100%: Strong compliance posture ✅
+- 70-89%: Acceptable with minor gaps ⚠️
+- 50-69%: Significant gaps requiring planning 🔶
+- 0-49%: Critical gaps requiring immediate remediation ❌
+
+---
+
+## 🚀 Deployment
+
+### Deploy to Vercel (Recommended)
 
 ```bash
-# Push to GitHub (recommended)
+# 1. Push to GitHub
+git add .
+git commit -m "Deploy to Vercel"
 git push origin main
 
-# Or deploy directly
-vercel deploy
+# 2. Connect on Vercel dashboard:
+# - Go to vercel.com
+# - Import your GitHub repository
+# - Configure environment variables
+# - Click "Deploy"
 ```
-
-Environment variables should be configured in Vercel project settings.
 
 ### Docker Deployment
 
 ```dockerfile
 FROM node:18-alpine
 WORKDIR /app
+RUN npm install -g pnpm
 COPY package.json pnpm-lock.yaml ./
-RUN npm install -g pnpm && pnpm install --frozen-lockfile
+RUN pnpm install --frozen-lockfile
 COPY . .
 RUN pnpm build
 EXPOSE 3000
 CMD ["pnpm", "start"]
 ```
 
-## Database Schema
-
-### Audits Table
-
-```sql
-CREATE TABLE audits (
-  id UUID PRIMARY KEY,
-  company_name VARCHAR(255),
-  audit_type TEXT,
-  status VARCHAR(50),
-  risk_score INTEGER,
-  overall_risk VARCHAR(50),
-  documents_count INTEGER,
-  created_at TIMESTAMP,
-  updated_at TIMESTAMP
-);
-```
-
-### Findings Table
-
-```sql
-CREATE TABLE findings (
-  id UUID PRIMARY KEY,
-  audit_id UUID REFERENCES audits(id),
-  category VARCHAR(100),
-  severity VARCHAR(50),
-  title VARCHAR(255),
-  description TEXT,
-  remediation TEXT,
-  evidence TEXT,
-  timestamp TIMESTAMP
-);
-```
-
-See `sql/001_initial_schema.sql` for complete schema.
-
-## Troubleshooting
-
-### Issue: "Supabase connection failed"
-
-**Solution**: Verify `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` are set correctly in `.env.local`
-
-### Issue: "Coral.ai API key invalid"
-
-**Solution**: Check `CORAL_AI_API_KEY` in environment variables and verify API key is valid on Coral.ai dashboard
-
-### Issue: Components not rendering
-
-**Solution**: Ensure shadcn/ui components are installed:
 ```bash
-pnpm exec shadcn-ui@latest add badge dialog select checkbox button input textarea
+docker build -t omndue .
+docker run -p 3000:3000 omndue
 ```
 
-### Issue: Build errors
+---
 
-**Solution**: Clear build cache and reinstall:
+## 🐛 Troubleshooting
+
+### Supabase Connection Failed
+**Solution**: Verify credentials in `.env.local` and restart server
+
+### AI API Key Invalid
+**Solution**: Check API key format and verify it's active on provider dashboard
+
+### Components Not Rendering
+**Solution**: Reinstall shadcn/ui components:
 ```bash
-rm -rf .next node_modules pnpm-lock.yaml
+pnpm exec shadcn-ui@latest add button dialog
+```
+
+### Build Errors
+**Solution**: Clear cache and rebuild:
+```bash
+rm -rf .next node_modules
 pnpm install
 pnpm build
 ```
 
-## Performance Optimization
+---
 
-- Risk Heatmap uses memoized calculations for efficient re-renders
-- API responses are cached with SWR for 5 minutes
-- PDF generation runs asynchronously to avoid blocking UI
-- Database queries use proper indexing on `audit_id` and `severity`
+## 📝 License
 
-## Security Considerations
+MIT License - See [LICENSE](LICENSE) for details
 
-- All API endpoints require request validation with Zod
-- Database queries use parameterized statements to prevent SQL injection
-- Environment variables with sensitive keys are never exposed to client
-- CORS headers restrict API access to authorized origins
-- Audit logs capture all compliance findings for non-repudiation
+---
 
-## License
+## 🤝 Contributing
 
-MIT License - See LICENSE file for details
+Contributions are welcome! Please:
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Submit a pull request
 
-## Support
+---
 
-For issues, feature requests, or questions:
-- Open an issue on GitHub
-- Contact: support@macomplianceagent.com
-- Documentation: docs.macomplianceagent.com
+## 📞 Support
 
-## Roadmap
+- 📧 Email: support@omndue.com
+- 🐛 Issues: [GitHub Issues](https://github.com/godaralokesh29/OmniDue/issues)
+- 📖 Docs: [docs.omndue.com](https://docs.omndue.com)
 
-- [ ] Real-time collaboration on audits
-- [ ] Custom compliance frameworks (ISO 27001, etc)
-- [ ] Automated remediation suggestions with implementation tracking
-- [ ] Integration with legal document management systems
-- [ ] Advanced AI reasoning for complex compliance scenarios
-- [ ] Audit history and trend analysis dashboard
-- [ ] Mobile app for on-the-go audit management
-#   O m n i D u e - 
- 
- 
+---
+
+## ✨ Built With
+
+- [Next.js](https://nextjs.org/) - React framework
+- [Supabase](https://supabase.com/) - PostgreSQL database
+- [Vercel AI SDK](https://sdk.vercel.ai/) - AI integration
+- [Tailwind CSS](https://tailwindcss.com/) - Styling
+- [shadcn/ui](https://ui.shadcn.com/) - Components
+
+---
+
+<div align="center">
+
+**Built with ❤️ by [Lokesh Godara](https://github.com/godaralokesh29)**
+
+[⬆ Back to Top](#omndue-ma-legal-due-diligence-agent)
+
+</div>
