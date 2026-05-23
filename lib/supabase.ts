@@ -1,15 +1,12 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './database.types';
+import { supabaseAdmin } from './supabase-admin';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
 // Client for browser/client-side operations
 export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey);
-
-// Admin client for server-side operations (use sparingly)
-export const supabaseAdmin = createClient<Database>(supabaseUrl, supabaseServiceKey);
 
 // Helper functions for common database operations
 export async function createAudit(auditData: {

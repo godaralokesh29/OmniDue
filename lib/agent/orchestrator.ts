@@ -1,7 +1,7 @@
 import { DataFetcher } from './data-fetcher';
 import { CrossReferenceAnalyzer, ComplianceMappingAnalyzer, RiskCalculator } from './cross-reference-analyzer';
 import type { CrossReferenceResult, AgentState, DocumentData, RegulatoryRequirement } from './types';
-import { supabaseAdmin } from '../supabase';
+import { supabaseAdmin } from '../supabase-admin';
 
 export interface AgentConfig {
   auditId: string;

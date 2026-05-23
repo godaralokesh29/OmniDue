@@ -1,5 +1,5 @@
 // Helper to manage multi-tenant agent context
-import { supabaseAdmin } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabase-admin';
 import { EncryptionService } from '@/lib/encryption-service';
 import { MultiTenantDataFetcher } from '@/lib/agent/multi-tenant-data-fetcher';
 

@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Loader2, CheckCircle2, AlertCircle, Trash2, Plus } from 'lucide-react';
+import { supabase } from '@/lib/supabase';
 
 interface Integration {
   id: string;
@@ -43,15 +44,41 @@ export function IntegrationSettingsPage() {
   const [selectedIntegration, setSelectedIntegration] = useState<Integration | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [authLoading, setAuthLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [testing, setTesting] = useState<Record<string, boolean>>({});
   const [testResults, setTestResults] = useState<Record<string, any>>({});
-
-  const userId = 'user-id-from-auth'; // TODO: Get from auth context
+  const [userId, setUserId] = useState<string>('');
 
   useEffect(() => {
-    fetchIntegrations();
+    const getUserId = async () => {
+      try {
+        const { data } = await supabase.auth.getUser();
+        if (data.user) {
+          setUserId(data.user.id);
+        } else {
+          console.warn('No user found');
+          setLoading(false);
+        }
+      } catch (error) {
+        console.error('Error getting user:', error);
+        setLoading(false);
+      } finally {
+        setAuthLoading(false);
+      }
+    };
+    
+    getUserId();
   }, []);
+
+  useEffect(() => {
+    if (userId) {
+      fetchIntegrations();
+    } else if (!authLoading) {
+      // If auth is done but no userId, stop loading
+      setLoading(false);
+    }
+  }, [userId, authLoading]);
 
   const fetchIntegrations = async () => {
     try {
@@ -137,7 +164,7 @@ export function IntegrationSettingsPage() {
     }
   };
 
-  if (loading) {
+  if (loading || authLoading) {
     return (
       <div className="flex justify-center items-center p-8">
         <Loader2 className="w-6 h-6 animate-spin" />
@@ -345,6 +372,12 @@ function IntegrationForm({
     setSaving(true);
 
     try {
+      if (!userId) {
+        setError('User not authenticated');
+        setSaving(false);
+        return;
+      }
+
       const response = await fetch('/api/user/integrations', {
         method: 'POST',
         headers: {
@@ -357,6 +390,14 @@ function IntegrationForm({
         }),
       });
 
+      if (!response.ok) {
+        const text = await response.text();
+        setError(`Server error: ${response.status}`);
+        console.error('API Response:', text);
+        setSaving(false);
+        return;
+      }
+
       const data = await response.json();
 
       if (data.success) {
@@ -366,6 +407,7 @@ function IntegrationForm({
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
+      console.error('Error:', err);
     } finally {
       setSaving(false);
     }
