@@ -2,7 +2,7 @@
 
 > **Intelligent Compliance Intelligence for M&A Transactions**
 
-An enterprise-grade AI-powered platform for automated compliance analysis, risk assessment, and legal due diligence during mergers and acquisitions. Built with Next.js 15, React 19, and Vercel AI SDK, OmniDue provides comprehensive intelligence across security, privacy, regulatory, and legal domains.
+An enterprise-grade AI-powered platform for automated compliance analysis, risk assessment, and legal due diligence during mergers and acquisitions. Built with Next.js 16, React 19, TypeScript, and Vercel AI SDK.
 
 [![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)](https://nextjs.org/)
 [![React](https://img.shields.io/badge/React-19-blue?logo=react)](https://react.dev/)
@@ -26,12 +26,14 @@ An enterprise-grade AI-powered platform for automated compliance analysis, risk 
 - [Usage Guide](#usage-guide)
 - [Deployment](#deployment)
 - [Troubleshooting](#troubleshooting)
+- [Performance & Security](#performance--security)
+- [License](#license)
 
 ---
 
 ## 🎯 Overview
 
-**OmniDue** is a comprehensive due diligence intelligence platform designed for M&A teams, corporate counsel, and compliance officers. It automates the complex process of compliance assessment, risk identification, and regulatory alignment through intelligent analysis engines and AI-powered insights.
+**OmniDue** is a comprehensive due diligence intelligence platform designed for M&A teams, corporate counsel, and compliance officers. It automates the complex process of compliance assessment, risk identification, and legal analysis during mergers and acquisitions.
 
 ### Key Capabilities
 
@@ -49,6 +51,7 @@ An enterprise-grade AI-powered platform for automated compliance analysis, risk 
 ## 🌟 Core Features
 
 ### 1. **Risk Heatmap** 🔴📊
+
 Visualizes compliance risk across a dynamic matrix combining:
 - **5 Risk Categories**: Legal, Security, Privacy, Compliance, Data Protection
 - **5 Assessment Dimensions**: Documentation, Implementation, Testing, Monitoring, Response
@@ -58,6 +61,7 @@ Visualizes compliance risk across a dynamic matrix combining:
 **Access**: Dashboard → Risk Heatmap tab or `/audits/:id`
 
 ### 2. **License Scanner** 📦
+
 Automated open-source license compliance analysis:
 - **Input Detection**: Analyzes package.json, npm packages, Python dependencies, and source code
 - **Violation Detection**: GPL-2.0/3.0, AGPL, SSPL, LGPL copyleft violations
@@ -66,15 +70,14 @@ Automated open-source license compliance analysis:
 - **Report Generation**: Detailed compliance summary with alternative solutions
 
 **Supported Patterns**:
-```
 - GPL-2.0 / GPL-3.0
 - AGPL-3.0 / SSPL
 - LGPL-2.1 / LGPL-3.0
 - MIT / Apache-2.0 (permissive)
 - BSD / ISC (permissive)
-```
 
 ### 3. **Security Audit** 🔒
+
 Comprehensive code security scanning:
 - **Secret Detection**: AWS keys, API credentials, database passwords, private keys
 - **Vulnerability Patterns**: eval(), XSS, SQL injection, command injection risks
@@ -82,14 +85,8 @@ Comprehensive code security scanning:
 - **Authentication Issues**: Hardcoded credentials, plaintext passwords, session vulnerabilities
 - **Severity Classification**: CRITICAL, HIGH, MEDIUM, LOW
 
-**Example Detection**:
-```typescript
-Pattern: AWS_SECRET_ACCESS_KEY\s*=\s*['"][^'"]+['"]
-Severity: CRITICAL
-Remediation: Use AWS Secrets Manager or environment variables
-```
-
 ### 4. **Data Privacy Mapper** 🔐
+
 Regulatory compliance assessment framework:
 
 **GDPR Compliance**:
@@ -112,6 +109,7 @@ Regulatory compliance assessment framework:
 - Business Associate Agreements (BAA)
 
 ### 5. **Regulatory Checker** ⚖️
+
 Enterprise regulatory requirement tracking:
 
 **SEC Requirements**:
@@ -133,6 +131,7 @@ Enterprise regulatory requirement tracking:
 **Deadline Tracking**: Alerts for critical deadlines (< 30 days, 30-90 days, 90+ days)
 
 ### 6. **Compliance Scorecard** 📊
+
 Real-time compliance metrics dashboard:
 - **Overall Compliance Score**: Percentage-based (0-100%)
 - **Category Breakdown**: Individual scores per compliance domain
@@ -147,6 +146,7 @@ Real-time compliance metrics dashboard:
 - 🔴 Below 50%: Critical gaps requiring immediate action
 
 ### 7. **Report Generator** 📄
+
 Multi-format compliance reporting:
 
 **Output Formats**:
@@ -165,6 +165,7 @@ Multi-format compliance reporting:
 ## 🛠 Tech Stack
 
 ### Frontend
+
 | Technology | Version | Purpose |
 |-----------|---------|---------|
 | **Next.js** | 16.2.6 | React framework with API routes |
@@ -177,6 +178,7 @@ Multi-format compliance reporting:
 | **Zod** | 3.24.1 | Schema validation |
 
 ### Backend & Data
+
 | Technology | Version | Purpose |
 |-----------|---------|---------|
 | **Supabase** | 2.106.1 | PostgreSQL database & auth |
@@ -184,6 +186,7 @@ Multi-format compliance reporting:
 | **Node.js** | 18+ | Runtime environment |
 
 ### AI & Analytics
+
 | Technology | Purpose |
 |-----------|---------|
 | **Vercel AI SDK** | Unified AI model interface |
@@ -191,6 +194,7 @@ Multi-format compliance reporting:
 | **Streaming** | Real-time response streaming |
 
 ### UI Components & Libraries
+
 | Library | Components |
 |---------|-----------|
 | **Radix UI** | Dialog, Tabs, Dropdown, Select, etc. (30+ components) |
@@ -201,6 +205,7 @@ Multi-format compliance reporting:
 | **next-themes** | Dark mode support |
 
 ### Development Tools
+
 | Tool | Purpose |
 |------|---------|
 | **pnpm** | Fast package manager |
@@ -343,7 +348,7 @@ Before you begin, ensure you have:
 ### Step 1: Clone Repository
 
 ```bash
-git clone https://github.com/godaralokesh29/OmniDue-.git
+git clone https://github.com/godaralokesh29/OmniDue.git
 cd omndue
 ```
 
@@ -393,24 +398,17 @@ NEXT_PUBLIC_APP_NAME=OmniDue
 
 ### Step 4: Database Setup (Supabase)
 
-```bash
-# 1. Create a new project in Supabase dashboard
-# 2. Go to SQL Editor and execute:
-```
+1. Create a new project in Supabase dashboard
+2. Go to SQL Editor and execute the contents of `sql/001_initial_schema.sql`
 
-Copy and run the contents of `sql/001_initial_schema.sql` in your Supabase SQL Editor:
-
-```sql
--- Execute this in Supabase SQL Editor
--- This creates tables for:
--- - audits: Audit records
--- - findings: Compliance findings
--- - documents: Uploaded files
--- - integrations: API connections
--- - audit_logs: Audit trails
--- - risk_assessments: Risk data
--- - compliance_scores: Scorecard data
-```
+This creates tables for:
+- audits: Audit records
+- findings: Compliance findings
+- documents: Uploaded files
+- integrations: API connections
+- audit_logs: Audit trails
+- risk_assessments: Risk data
+- compliance_scores: Scorecard data
 
 ### Step 5: Start Development Server
 
@@ -484,38 +482,22 @@ POST   /api/user/integrations/test
 Body:  { integrationName }
 ```
 
----
-
-## API Endpoints
-
-### Audits
-
-```bash
-GET    /api/audits                 # List all audits
-POST   /api/audits/create          # Create new audit
-GET    /api/audits/:auditId        # Get audit details
-GET    /api/audits/:auditId/findings  # Get findings for audit
-```
-
-### Analysis
-
-```bash
-POST   /api/analysis/analyze       # Run AI analysis on documents
-POST   /api/analysis/license-scan  # Scan dependencies
-POST   /api/analysis/security-audit # Security scanning
-POST   /api/analysis/privacy-map   # Privacy compliance check
-POST   /api/analysis/regulatory    # Regulatory requirement check
-```
-
 ### Documents
 
 ```bash
-POST   /api/documents/upload       # Upload document
-GET    /api/documents/:auditId     # List documents
-DELETE /api/documents/:docId       # Delete document
+# Upload document
+POST   /api/documents/upload
+
+# List documents
+GET    /api/documents/:auditId
+
+# Delete document
+DELETE /api/documents/:docId
 ```
 
-## Usage Guide
+---
+
+## 📖 Usage Guide
 
 ### Running an Audit
 
@@ -546,7 +528,7 @@ DELETE /api/documents/:docId       # Delete document
 
 ### Interpreting Results
 
-**Risk Heatmap**: 
+**Risk Heatmap**:
 - Red (7-10): Critical gaps requiring immediate action
 - Orange (4-6): High priority gaps to address within 30 days
 - Yellow (2-3): Medium priority gaps to address within 90 days
@@ -558,7 +540,7 @@ DELETE /api/documents/:docId       # Delete document
 - 50-69%: Significant gaps requiring planning
 - Below 50%: Critical gaps requiring immediate remediation
 
-## Demo Mode
+### Demo Mode
 
 The application ships with sample data for testing:
 
@@ -573,9 +555,11 @@ The application ships with sample data for testing:
 To use real data:
 1. Configure Supabase integration
 2. Update API endpoints to query database instead of sample-data.ts
-3. Upload real documents and documents
+3. Upload real documents and data
 
-## Configuration
+---
+
+## ⚙️ Configuration
 
 ### Tailwind CSS
 
@@ -599,7 +583,7 @@ All API keys should be in `.env.local`:
 # Required
 NEXT_PUBLIC_SUPABASE_URL
 NEXT_PUBLIC_SUPABASE_ANON_KEY
-CORAL_AI_API_KEY
+ANTHROPIC_API_KEY or OPENAI_API_KEY
 
 # Optional - integrations
 NOTION_INTEGRATION_TOKEN
@@ -607,34 +591,9 @@ GITHUB_API_TOKEN
 SEC_EDGAR_API_KEY
 ```
 
-## Deployment
+---
 
-### Deploy to Vercel
-
-```bash
-# Push to GitHub (recommended)
-git push origin main
-
-# Or deploy directly
-vercel deploy
-```
-
-Environment variables should be configured in Vercel project settings.
-
-### Docker Deployment
-
-```dockerfile
-FROM node:18-alpine
-WORKDIR /app
-COPY package.json pnpm-lock.yaml ./
-RUN npm install -g pnpm && pnpm install --frozen-lockfile
-COPY . .
-RUN pnpm build
-EXPOSE 3000
-CMD ["pnpm", "start"]
-```
-
-## Database Schema
+## 🗄️ Database Schema
 
 ### Audits Table
 
@@ -670,15 +629,46 @@ CREATE TABLE findings (
 
 See `sql/001_initial_schema.sql` for complete schema.
 
-## Troubleshooting
+---
+
+## 🚀 Deployment
+
+### Deploy to Vercel
+
+```bash
+# Push to GitHub (recommended)
+git push origin main
+
+# Or deploy directly
+vercel deploy
+```
+
+Environment variables should be configured in Vercel project settings.
+
+### Docker Deployment
+
+```dockerfile
+FROM node:18-alpine
+WORKDIR /app
+COPY package.json pnpm-lock.yaml ./
+RUN npm install -g pnpm && pnpm install --frozen-lockfile
+COPY . .
+RUN pnpm build
+EXPOSE 3000
+CMD ["pnpm", "start"]
+```
+
+---
+
+## 🔧 Troubleshooting
 
 ### Issue: "Supabase connection failed"
 
 **Solution**: Verify `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` are set correctly in `.env.local`
 
-### Issue: "Coral.ai API key invalid"
+### Issue: "API key invalid"
 
-**Solution**: Check `CORAL_AI_API_KEY` in environment variables and verify API key is valid on Coral.ai dashboard
+**Solution**: Check your LLM API key (Claude, OpenAI, etc.) in environment variables and verify it's valid on the respective dashboard
 
 ### Issue: Components not rendering
 
@@ -696,14 +686,18 @@ pnpm install
 pnpm build
 ```
 
-## Performance Optimization
+---
+
+## ⚡ Performance & Security
+
+### Performance Optimization
 
 - Risk Heatmap uses memoized calculations for efficient re-renders
 - API responses are cached with SWR for 5 minutes
 - PDF generation runs asynchronously to avoid blocking UI
 - Database queries use proper indexing on `audit_id` and `severity`
 
-## Security Considerations
+### Security Considerations
 
 - All API endpoints require request validation with Zod
 - Database queries use parameterized statements to prevent SQL injection
@@ -711,18 +705,24 @@ pnpm build
 - CORS headers restrict API access to authorized origins
 - Audit logs capture all compliance findings for non-repudiation
 
-## License
+---
+
+## 📄 License
 
 MIT License - See LICENSE file for details
 
-## Support
+---
+
+## 💬 Support
 
 For issues, feature requests, or questions:
 - Open an issue on GitHub
-- Contact: support@macomplianceagent.com
-- Documentation: docs.macomplianceagent.com
+- Contact: support@omndue.com
+- Documentation: docs.omndue.com
 
-## Roadmap
+---
+
+## 🗺️ Roadmap
 
 - [ ] Real-time collaboration on audits
 - [ ] Custom compliance frameworks (ISO 27001, etc)
@@ -731,6 +731,3 @@ For issues, feature requests, or questions:
 - [ ] Advanced AI reasoning for complex compliance scenarios
 - [ ] Audit history and trend analysis dashboard
 - [ ] Mobile app for on-the-go audit management
-#   O m n i D u e - 
- 
- 
